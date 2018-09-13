@@ -2,16 +2,16 @@ package com.example.yushichao.cameratest;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Camera;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Timer;
@@ -29,20 +29,26 @@ public class MainActivity extends AppCompatActivity {
     private Button bt;
 
     private ImageView iv1,iv2;
-    private MyCamera2 camera;
+    private TextView tv;
+    private MyCamera1 camera;
 
     private Timer timer;
     private TimerTask task;
     private Handler handler;
 
+    private ImageView iv;
+
+    private boolean record=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-//        if(!hasPermissionsGranted(PERMISSIONS)) {
-//            requestPermissions(PERMISSIONS,1);
-//        }
+        if(!hasPermissionsGranted(PERMISSIONS)) {
+            if(Build.VERSION.SDK_INT>24) {
+                requestPermissions(PERMISSIONS, 1);
+            }
+        }
 
         Init();
     }
@@ -50,20 +56,29 @@ public class MainActivity extends AppCompatActivity {
     private void Init(){
         iv1=(ImageView)findViewById(R.id.imageView);
         iv2=(ImageView)findViewById(R.id.imageView2);
+        tv=(TextView)findViewById(R.id.textView);
 
         bt=(Button)findViewById(R.id.button);
         surfaceView=(SurfaceView)findViewById(R.id.surfaceView);
-        camera=new MyCamera2(this,surfaceView,iv1,iv2);
+
+        camera=new MyCamera1(this,surfaceView,iv1,iv2,tv);
         camera.openCamera();
 
-        task=new TimerTask() {
+        bt.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
+            public void onClick(View v) {
                 camera.TakePhoto();
             }
-        };
-        timer=new Timer();
-        timer.schedule(task,2000,10000);
+        });
+
+//        task=new TimerTask() {
+//            @Override
+//            public void run() {
+//                camera.TakePhoto();
+//            }
+//        };
+//        timer=new Timer();
+//        timer.schedule(task,2000,10000);
 
     }
 
@@ -90,32 +105,34 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        if (requestCode == 1) {
-//            if (grantResults.length == PERMISSIONS.length) {
-//                for (int result : grantResults) {
-//                    if (result != PackageManager.PERMISSION_GRANTED) {
-//                        Toast.makeText(this,"请给权限",Toast.LENGTH_SHORT);
-//                        return;
-//                    }
-//                }
-//            } else {
-//                requestPermissions(permissions,requestCode);
-//            }
-//        } else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
-//
-//    private boolean hasPermissionsGranted(String[] permissions) {
-//        for (String permission : permissions) {
-//            if (this.checkSelfPermission(permission)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length == PERMISSIONS.length) {
+                for (int result : grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,"请给权限",Toast.LENGTH_SHORT);
+                        return;
+                    }
+                }
+            } else {
+                if (Build.VERSION.SDK_INT>24) {
+                    requestPermissions(permissions, requestCode);
+                }
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private boolean hasPermissionsGranted(String[] permissions) {
+        for (String permission : permissions) {
+            if (Build.VERSION.SDK_INT>24&&this.checkSelfPermission(permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
