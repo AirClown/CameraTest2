@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private SurfaceView surfaceView;
-    private Button bt;
+    private Button bt,bt2;
 
     private ImageView iv1,iv2;
     private TextView tv;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         tv=(TextView)findViewById(R.id.textView);
 
         bt=(Button)findViewById(R.id.button);
+        bt2=(Button)findViewById(R.id.button2);
         surfaceView=(SurfaceView)findViewById(R.id.surfaceView);
 
         camera=new MyCamera1(this,surfaceView,iv1,iv2,tv);
@@ -67,19 +68,44 @@ public class MainActivity extends AppCompatActivity {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (timer!=null){
+                    StopTimer();
+                }
                 camera.TakePhoto();
             }
         });
 
-//        task=new TimerTask() {
-//            @Override
-//            public void run() {
-//                camera.TakePhoto();
-//            }
-//        };
-//        timer=new Timer();
-//        timer.schedule(task,2000,10000);
+        bt2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                  if (timer==null){
+                      StartTimer(1500);
+                  }else{
+                      StopTimer();
+                  }
+            }
+        });
+    }
 
+    private void StopTimer(){
+        if (timer!=null) {
+            timer.purge();
+            timer.cancel();
+            task.cancel();
+            timer = null;
+            task = null;
+        }
+    }
+
+    private void StartTimer(int time){
+        timer=new Timer();
+        task=new TimerTask() {
+            @Override
+            public void run() {
+                camera.TakePhoto();
+            }
+        };
+        timer.schedule(task,1000,time);
     }
 
     @Override

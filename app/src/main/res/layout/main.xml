@@ -42,6 +42,17 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:text="Text"
+        android:textColor="@color/colorAccent"
         android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignBaseline="@+id/button"
+        android:layout_alignBottom="@+id/button"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="50dp"
+        android:background="@android:drawable/presence_video_busy" />
 
 </RelativeLayout>
